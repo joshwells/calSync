@@ -1,9 +1,3 @@
-set theStartDate to (current date) - (1 * days)
-set hours of theStartDate to 0
-set minutes of theStartDate to 0
-set seconds of theStartDate to 0
-set theEndDate to theStartDate + (1 * days)
-
 set sourceCalendarTitle to "Source Calendar"
 set destinationCalendarTitle to "Destination Calendar"
 set ignoreTitles to {"Busy", "busy", "Reservation"}
