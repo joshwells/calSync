@@ -1,7 +1,7 @@
 log (current date)
 
-set sourceCalendarTitle to "Source Calendar"
-set destinationCalendarTitle to "Destination Calendar"
+set sourceCalendarTitle to "Calendar"
+set destinationCalendarTitle to "Work"
 set ignoreTitles to {"Busy", "busy", "Reservation", "WFH", "Working from Home", "Vacation"}
 
 tell application "Calendar"
@@ -55,16 +55,27 @@ tell application "Calendar"
 			else
 				set srcSummary to summary of srcEvent
 			end if
-			make new event at destinationCalendar with properties {summary:item iSrc in sourceTitles, start date:start date of srcEvent, end date:end date of srcEvent, description:item iSrc in sourceUids, allday event:allday event of srcEvent, excluded dates:excluded dates of srcEvent}
+
+			-- Create base event WITHOUT excluded dates initially (they must be set AFTER recurrence for irregular events)
+			make new event at destinationCalendar with properties {summary:item iSrc in sourceTitles, start date:start date of srcEvent, end date:end date of srcEvent, description:item iSrc in sourceUids, allday event:allday event of srcEvent}
 			set newEvent to (first event of destinationCalendar where its description = uid of srcEvent)
+
+			-- Set recurrence FIRST before excluded dates (critical for irregular repeating events)
+			if recurrence of srcEvent is not equal to missing value then
+				set recurrence of newEvent to recurrence of srcEvent
+			end if
+
+			-- NOW set excluded dates AFTER recurrence is established
+			if excluded dates of srcEvent is not equal to missing value and excluded dates of srcEvent is not equal to {} then
+				set excluded dates of newEvent to excluded dates of srcEvent
+			end if
+
+			-- Set other properties
 			if location of srcEvent is not equal to missing value then
 				set location of newEvent to location of srcEvent
 			end if
 			if url of srcEvent is not equal to missing value then
 				set url of newEvent to url of srcEvent
-			end if
-			if recurrence of srcEvent is not equal to missing value then
-				set recurrence of newEvent to recurrence of srcEvent
 			end if
 		end if
 	end repeat
