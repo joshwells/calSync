@@ -1,13 +1,19 @@
-log (current date)
+-- Get calendar names from positional arguments
+on run argv
+	log (current date)
 
-set sourceCalendarTitle to "Source Calendar"
-set destinationCalendarTitle to "Destination Calendar"
+	if (count of argv) < 2 then
+		error "Usage: osascript 'Calendar Sync.applescript' <sourceCalendar> <destinationCalendar>"
+	end if
+
+	set sourceCalendarTitle to item 1 of argv
+	set destinationCalendarTitle to item 2 of argv
 set ignoreTitles to {"Busy", "busy", "Reservation", "WFH", "Working from Home", "Vacation"}
 
 tell application "Calendar"
 	set destinationCalendar to (first calendar where its title = destinationCalendarTitle)
 	set sourceCalendar to (first calendar where its title = sourceCalendarTitle)
-	
+
 	-- Get lists of source items
 	log "Getting source events..."
 	set {sourceStamps, sourceTitles, sourceUids, sourceEndDates} to {stamp date, summary, uid, end date} of (events of sourceCalendar)
@@ -80,3 +86,4 @@ tell application "Calendar"
 	
 	log "Processing complete."
 end tell
+end run
